@@ -12,17 +12,18 @@ def index_page(request):
 
 # auxiliar: retorna 2 listados -> uno de las imágenes de la API y otro de los favoritos del usuario.
 def getAllImagesAndFavouriteList(request):
-    images = []
-    favourite_list = []
+        images = services_nasa_image_gallery.getAllImages()
+        favourite_list = []
 
-    return images, favourite_list
+        return images, favourite_list
 
 # función principal de la galería.
-def home(request):
-    # llama a la función auxiliar getAllImagesAndFavouriteList() y obtiene 2 listados: uno de las imágenes de la API y otro de favoritos por usuario*.
+# llama a la función auxiliar getAllImagesAndFavouriteList() y obtiene 2 listados: uno de las imágenes de la API y otro de favoritos por usuario*.
     # (*) este último, solo si se desarrolló el opcional de favoritos; caso contrario, será un listado vacío [].
-    images = []
-    favourite_list = []
+def home(request):
+    images=[]
+    favourite_list=[]
+    images, favourite_list = getAllImagesAndFavouriteList(request)
     return render(request, 'home.html', {'images': images, 'favourite_list': favourite_list} )
 
 
@@ -31,8 +32,22 @@ def search(request):
     images, favourite_list = getAllImagesAndFavouriteList(request)
     search_msg = request.POST.get('query', '')
 
+    if not search_msg:
+        return render(request, 'home.html', {'images':images, 'favourite_list': favourite_list})
+    
+    filtered_images = []
+
+    for image in images:
+        if search_msg  in image.description:
+            filtered_images.append(image)
+    
+    return render(request, 'home.html', {'images': filtered_images, 'favourite_list': favourite_list})
+
     # si el usuario no ingresó texto alguno, debe refrescar la página; caso contrario, debe filtrar aquellas imágenes que posean el texto de búsqueda.
     pass
+
+def inicioSesion(request):
+    return render(request, 'registration/login.html')
 
 
 # las siguientes funciones se utilizan para implementar la sección de favoritos: traer los favoritos de un usuario, guardarlos, eliminarlos y desloguearse de la app.
@@ -54,4 +69,6 @@ def deleteFavourite(request):
 
 @login_required
 def exit(request):
+    logout(request)
+    return redirect('home')
     pass
