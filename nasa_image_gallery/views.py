@@ -47,6 +47,7 @@ def search(request):
     # si el usuario no ingresó texto alguno, debe refrescar la página; caso contrario, debe filtrar aquellas imágenes que posean el texto de búsqueda.
     pass
 
+@login_required
 def inicioSesion(request):
     return render(request, 'registration/login.html')
 
