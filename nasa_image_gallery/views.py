@@ -38,7 +38,8 @@ def search(request):
     filtered_images = []
 
     for image in images:
-        if search_msg  in image.description:
+        if search_msg.lower() in image.title.lower() or search_msg.lower() in image.description.lower():
+
             filtered_images.append(image)
     
     return render(request, 'home.html', {'images': filtered_images, 'favourite_list': favourite_list})
